@@ -8,24 +8,22 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1><i class="icon">🧮</i> Advanced Number System Calculator</h1>
-            <p>Convert between number systems and calculate complements with full fractional support</p>
-        </header>
+        <h1>Advanced Number System Calculator</h1>
+        <p class="description">Convert between number systems and calculate complements with ease</p>
 
-        <div class="calculator">
-            <div class="tabs">
-                <button class="tab active" data-tab="conversion">Conversion</button>
-                <button class="tab" data-tab="complement">Complement</button>
-            </div>
+        <div class="tabs">
+            <div class="tab active" data-tab="conversion">Conversion</div>
+            <div class="tab" data-tab="complement">Complement</div>
+        </div>
 
-            <div class="tab-content active" id="conversion">
+        <div class="tab-content active" id="conversion-tab">
+            <div class="calculator">
                 <div class="input-section">
                     <div class="form-group">
                         <label for="input-value">Enter Number</label>
-                        <input type="text" id="input-value" placeholder="e.g., 1010.11, 25.639, FF.A">
+                        <input type="text" id="input-value" placeholder="e.g., 1010, FF, 755">
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="from-base">From Base</label>
                         <select id="from-base">
@@ -35,7 +33,7 @@
                             <option value="16">Hexadecimal (Base 16)</option>
                         </select>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="to-base">To Base</label>
                         <select id="to-base">
@@ -45,7 +43,7 @@
                             <option value="16" selected>Hexadecimal (Base 16)</option>
                         </select>
                     </div>
-                    
+
                     <button id="convert-btn">Convert</button>
                 </div>
 
@@ -54,16 +52,23 @@
                         <div class="result-title">Conversion Result</div>
                         <div id="conversion-result">-</div>
                     </div>
+
+                    <div class="result">
+                        <div class="result-title">Original Value</div>
+                        <div id="original-value">-</div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="tab-content" id="complement">
+        <div class="tab-content" id="complement-tab">
+            <div class="calculator">
                 <div class="input-section">
                     <div class="form-group">
                         <label for="complement-input">Enter Number</label>
-                        <input type="text" id="complement-input" placeholder="e.g., 11101.0110, 25.639">
+                        <input type="text" id="complement-input" placeholder="e.g., 1010, FF, 755">
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="complement-base">Base</label>
                         <select id="complement-base">
@@ -73,15 +78,21 @@
                             <option value="16">Hexadecimal (Base 16)</option>
                         </select>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Complement Type</label>
-                        <div class="radio-group">
-                            <label><input type="radio" name="complement-type" value="r-1" checked> <span id="r-1-label">9's Complement</span></label>
-                            <label><input type="radio" name="complement-type" value="r"> <span id="r-label">10's Complement</span></label>
+                        <div style="display: flex; gap: 10px;">
+                            <label style="display: flex; align-items: center; gap: 5px;">
+                                <input type="radio" name="complement-type" value="r-1" checked> 
+                                <span id="r-1-label">(r-1)'s Complement</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px;">
+                                <input type="radio" name="complement-type" value="r"> 
+                                <span id="r-label">r's Complement</span>
+                            </label>
                         </div>
                     </div>
-                    
+
                     <button id="calculate-complement-btn">Calculate Complement</button>
                 </div>
 
@@ -90,6 +101,7 @@
                         <div class="result-title">Complement Result</div>
                         <div id="complement-result">-</div>
                     </div>
+
                     <div class="result">
                         <div class="result-title">Explanation</div>
                         <div id="complement-explanation">-</div>

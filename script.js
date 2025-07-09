@@ -1,22 +1,21 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // DOM Elements
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const complementBase = document.getElementById('complement-base');
-    const r1Label = document.getElementById('r-1-label');
-    const rLabel = document.getElementById('r-label');
-    
     // Tab switching
+    const tabs = document.querySelectorAll('.tab');
     tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
-            tab.classList.add('active');
-            document.getElementById(tab.dataset.tab).classList.add('active');
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            const tabId = this.getAttribute('data-tab');
+            document.getElementById(`${tabId}-tab`).classList.add('active');
         });
     });
 
-    // Update complement labels
+    // Complement terminology
+    const complementBase = document.getElementById('complement-base');
+    const r1Label = document.getElementById('r-1-label');
+    const rLabel = document.getElementById('r-label');
+
     function updateComplementLabels() {
         const base = parseInt(complementBase.value);
         r1Label.textContent = `(${base-1})'s Complement`;
@@ -26,17 +25,18 @@ document.addEventListener('DOMContentLoaded', function() {
     complementBase.addEventListener('change', updateComplementLabels);
     updateComplementLabels();
 
-    // Conversion functionality
-    const convertBtn = document.getElementById('convert-btn');
-    convertBtn.addEventListener('click', convertNumber);
+    // Conversion function
+    document.getElementById('convert-btn').addEventListener('click', convertNumber);
     
     function convertNumber() {
         const input = document.getElementById('input-value').value.trim();
         const fromBase = parseInt(document.getElementById('from-base').value);
         const toBase = parseInt(document.getElementById('to-base').value);
         const resultElement = document.getElementById('conversion-result');
+        const originalElement = document.getElementById('original-value');
         
         resultElement.className = '';
+        originalElement.className = '';
         
         if (!input) {
             showError(resultElement, 'Please enter a number');
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            // Validate input
+            // Handle fractional numbers
             const [integerPart, fractionalPart = ''] = input.split('.');
             const validChars = {
                 2: /^[01]+$/,
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 16: /^[0-9A-Fa-f]+$/
             }[fromBase];
             
-            if (!validChars.test(integerPart) {
+            if (!validChars.test(integerPart)) {
                 throw new Error(`Invalid integer part for base ${fromBase}`);
             }
             
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (fracValue > 0) {
                     fracResult = '.';
-                    let precision = 10; // Max fractional digits
+                    let precision = 10;
                     
                     while (fracValue > 0 && precision-- > 0) {
                         fracValue *= toBase;
@@ -100,14 +100,14 @@ document.addEventListener('DOMContentLoaded', function() {
             
             resultElement.textContent = result;
             resultElement.classList.add('success');
+            originalElement.textContent = `Base ${fromBase}: ${input} → Base ${toBase}: ${result}`;
         } catch (error) {
             showError(resultElement, error.message);
         }
     }
 
-    // Complement functionality
-    const compBtn = document.getElementById('calculate-complement-btn');
-    compBtn.addEventListener('click', calculateComplement);
+    // Complement calculation
+    document.getElementById('calculate-complement-btn').addEventListener('click', calculateComplement);
     
     function calculateComplement() {
         const input = document.getElementById('complement-input').value.trim();
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            // Validate input
+            // Handle fractional numbers
             const [integerPart, fractionalPart = ''] = input.split('.');
             const validChars = {
                 2: /^[01]+$/,
@@ -142,45 +142,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(`Invalid fractional part for base ${base}`);
             }
             
-            // Calculate complement
-            let result, explanation;
             const maxDigit = base - 1;
+            let result, explanation;
             
             if (type === 'r-1') {
                 // (r-1)'s complement
                 let intComplement = integerPart.split('').map(d => {
-                    const digit = parseInt(d, base);
-                    return (maxDigit - digit).toString(base).toUpperCase();
+                    return (maxDigit - parseInt(d, base)).toString(base).toUpperCase();
                 }).join('');
                 
                 let fracComplement = fractionalPart ? '.' + fractionalPart.split('').map(d => {
-                    const digit = parseInt(d, base);
-                    return (maxDigit - digit).toString(base).toUpperCase();
+                    return (maxDigit - parseInt(d, base)).toString(base).toUpperCase();
                 }).join('') : '';
                 
                 result = intComplement + fracComplement;
-                explanation = `(${maxDigit})'s complement is calculated by subtracting each digit (including fractional) from ${maxDigit}`;
+                explanation = `(${maxDigit})'s complement is calculated by subtracting each digit from ${maxDigit}`;
             } else {
                 // r's complement
                 // First calculate (r-1)'s complement
                 let intComplement = integerPart.split('').map(d => {
-                    const digit = parseInt(d, base);
-                    return (maxDigit - digit).toString(base).toUpperCase();
+                    return (maxDigit - parseInt(d, base)).toString(base).toUpperCase();
                 }).join('');
                 
                 let fracComplement = fractionalPart ? '.' + fractionalPart.split('').map(d => {
-                    const digit = parseInt(d, base);
-                    return (maxDigit - digit).toString(base).toUpperCase();
+                    return (maxDigit - parseInt(d, base)).toString(base).toUpperCase();
                 }).join('') : '';
                 
                 // Then add 1 to the least significant digit
-                if (fracComplement) {
+                if (fractionalPart) {
                     // Add to fractional part
                     const lastDigit = parseInt(fracComplement.slice(-1), base) + 1;
                     if (lastDigit >= base) {
-                        // Carry over
                         fracComplement = fracComplement.slice(0, -1) + '0';
-                        // Add carry to integer part
                         intComplement = (parseInt(intComplement, base) + 1).toString(base).toUpperCase();
                     } else {
                         fracComplement = fracComplement.slice(0, -1) + lastDigit.toString(base).toUpperCase();
@@ -191,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 result = intComplement + fracComplement;
-                explanation = `${base}'s complement is calculated by first finding the (${maxDigit})'s complement and then adding 1 to the least significant digit`;
+                explanation = `${base}'s complement is calculated by first finding the (${maxDigit})'s complement and then adding 1`;
             }
             
             resultElement.textContent = result;
@@ -206,4 +199,13 @@ document.addEventListener('DOMContentLoaded', function() {
         element.textContent = message;
         element.classList.add('error');
     }
+
+    // Allow Enter key to trigger actions
+    document.getElementById('input-value').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') convertNumber();
+    });
+
+    document.getElementById('complement-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') calculateComplement();
+    });
 });
