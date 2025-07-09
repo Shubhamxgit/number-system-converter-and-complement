@@ -1,8 +1,6 @@
 # Advanced Number System Calculator
 
-A comprehensive web-based calculator for number system conversions and complement calculations, supporting binary, octal, decimal, and hexadecimal systems.
-
-![Calculator Screenshot](Busy in studies, will add later buddy)
+A comprehensive calculator for number system conversions and complement calculations with full support for fractional numbers.
 
 ## Features
 
@@ -12,57 +10,42 @@ A comprehensive web-based calculator for number system conversions and complemen
   - Real-time input validation
 
 - **Complement Calculations**:
-  - r's complement (radix complement)
   - (r-1)'s complement (diminished radix complement)
-  - Detailed explanations of results
+  - r's complement (radix complement)
+  - Full support for fractional numbers
+  - Dynamic terminology based on selected base (e.g., 1's/2's, 9's/10's)
 
-- **User-Friendly Interface**:
-  - Clean, responsive design
-  - Tab-based navigation
-  - Keyboard support (Enter key triggers calculations)
+## Supported Operations
 
-## Technologies Used
+### Conversion Examples:
+- Binary to Decimal: `1010.11` → `10.75`
+- Decimal to Hex: `25.639` → `19.A3D70A3D70`
+- Octal to Binary: `755.4` → `111101101.1`
 
-- HTML5
-- CSS3 (with CSS variables for theming)
-- JavaScript (vanilla, no dependencies)
+### Complement Examples:
+- 2's complement of `11101.0110` → `00010.1010`
+- 9's complement of `25.639` → `74.360`
+- 1's complement of `1010.1101` → `0101.0010`
 
 ## How to Use
 
 1. **Conversion**:
-   - Enter your number in the input field
-   - Select the source base (binary, octal, decimal, or hexadecimal)
-   - Select the target base
-   - Click "Convert" or press Enter
+   - Enter a number in any base
+   - Select source and target bases
+   - Click "Convert"
 
 2. **Complement Calculation**:
-   - Enter your number
-   - Select the base
-   - Choose complement type (r's or r-1's)
-   - Click "Calculate Complement" or press Enter
+   - Enter a number (integer or fractional)
+   - Select base
+   - Choose complement type
+   - Click "Calculate Complement"
 
-## Live Demo
+## Technologies Used
 
-[View Live Demo](https://Shubhamxgit.github.io/number-system-converter-and-complement)
+- HTML5
+- CSS3
+- JavaScript (ES6)
 
 ## Installation
 
-No installation required! Just open `index.html` in any modern web browser.
-
-Alternatively, you can host it on any web server.
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a Pull Request
-
-
-## Acknowledgments
-
-- Inspired by computer science number system concepts
-- Built with pure web technologies (HTML, CSS, JS)
+No installation required. Just open `index.html` in any modern browser.

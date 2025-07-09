@@ -4,40 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advanced Number System Calculator</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-calculator"></i> Advanced Number System Calculator</h1>
-            <p>Convert between number systems and calculate complements with ease. Supports binary, octal, decimal, and hexadecimal formats.</p>
+            <h1><i class="icon">🧮</i> Advanced Number System Calculator</h1>
+            <p>Convert between number systems and calculate complements with full fractional support</p>
         </header>
 
-        <div class="card-container">
-            <!-- Conversion Card -->
-            <div class="card">
-                <div class="card-header">
-                    <i class="fas fa-exchange-alt"></i> Number System Conversion
-                </div>
-                <div class="card-body">
+        <div class="calculator">
+            <div class="tabs">
+                <button class="tab active" data-tab="conversion">Conversion</button>
+                <button class="tab" data-tab="complement">Complement</button>
+            </div>
+
+            <div class="tab-content active" id="conversion">
+                <div class="input-section">
                     <div class="form-group">
-                        <label for="input-value">
-                            Enter Number
-                            <span class="info-badge" title="Examples: Binary (1010.11), Octal (755.4), Decimal (123.45), Hex (FF.A)">?</span>
-                        </label>
-                        <input type="text" id="input-value" class="form-control" placeholder="e.g., 1010, 755, 123, FF">
-                        <div class="base-examples">
-                            <span class="base-example">Binary: 0-1, .</span>
-                            <span class="base-example">Octal: 0-7, .</span>
-                            <span class="base-example">Decimal: 0-9, .</span>
-                            <span class="base-example">Hex: 0-9, A-F, .</span>
-                        </div>
+                        <label for="input-value">Enter Number</label>
+                        <input type="text" id="input-value" placeholder="e.g., 1010.11, 25.639, FF.A">
                     </div>
                     
                     <div class="form-group">
                         <label for="from-base">From Base</label>
-                        <select id="from-base" class="form-control">
+                        <select id="from-base">
                             <option value="2">Binary (Base 2)</option>
                             <option value="8">Octal (Base 8)</option>
                             <option value="10" selected>Decimal (Base 10)</option>
@@ -47,7 +38,7 @@
                     
                     <div class="form-group">
                         <label for="to-base">To Base</label>
-                        <select id="to-base" class="form-control">
+                        <select id="to-base">
                             <option value="2">Binary (Base 2)</option>
                             <option value="8">Octal (Base 8)</option>
                             <option value="10">Decimal (Base 10)</option>
@@ -55,49 +46,27 @@
                         </select>
                     </div>
                     
-                    <button id="convert-btn" class="btn btn-block">
-                        <i class="fas fa-sync-alt"></i> Convert
-                    </button>
-                    
-                    <div class="btn-group">
-                        <button id="clear-conversion" class="btn btn-clear">
-                            <i class="fas fa-broom"></i> Clear
-                        </button>
-                        <button id="copy-conversion" class="btn btn-copy">
-                            <i class="fas fa-copy"></i> Copy Result
-                        </button>
-                    </div>
-                    
-                    <div class="result-container">
-                        <div class="result-title">
-                            <i class="fas fa-arrow-right"></i> Conversion Result
-                        </div>
-                        <div id="conversion-result" class="result-content">-</div>
-                        <div class="result-title" style="margin-top: 15px;">
-                            <i class="fas fa-info-circle"></i> Original Value
-                        </div>
-                        <div id="original-value" class="result-content">-</div>
+                    <button id="convert-btn">Convert</button>
+                </div>
+
+                <div class="output-section">
+                    <div class="result">
+                        <div class="result-title">Conversion Result</div>
+                        <div id="conversion-result">-</div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Complement Card -->
-            <div class="card">
-                <div class="card-header">
-                    <i class="fas fa-cubes"></i> Complement Calculator
-                </div>
-                <div class="card-body">
+
+            <div class="tab-content" id="complement">
+                <div class="input-section">
                     <div class="form-group">
-                        <label for="complement-input">
-                            Enter Number
-                            <span class="info-badge" title="Only integer numbers are supported for complement calculations">?</span>
-                        </label>
-                        <input type="text" id="complement-input" class="form-control" placeholder="e.g., 1010, 755, 123, FF">
+                        <label for="complement-input">Enter Number</label>
+                        <input type="text" id="complement-input" placeholder="e.g., 11101.0110, 25.639">
                     </div>
                     
                     <div class="form-group">
                         <label for="complement-base">Base</label>
-                        <select id="complement-base" class="form-control">
+                        <select id="complement-base">
                             <option value="2">Binary (Base 2)</option>
                             <option value="8">Octal (Base 8)</option>
                             <option value="10" selected>Decimal (Base 10)</option>
@@ -108,45 +77,25 @@
                     <div class="form-group">
                         <label>Complement Type</label>
                         <div class="radio-group">
-                            <div class="radio-item">
-                                <input type="radio" id="r-1" name="complement-type" value="r-1" checked>
-                                <label for="r-1" id="r-1-label">(r-1)'s Complement</label>
-                            </div>
-                            <div class="radio-item">
-                                <input type="radio" id="r" name="complement-type" value="r">
-                                <label for="r" id="r-label">r's Complement</label>
-                            </div>
+                            <label><input type="radio" name="complement-type" value="r-1" checked> <span id="r-1-label">9's Complement</span></label>
+                            <label><input type="radio" name="complement-type" value="r"> <span id="r-label">10's Complement</span></label>
                         </div>
                     </div>
                     
-                    <button id="calculate-complement-btn" class="btn btn-block">
-                        <i class="fas fa-calculator"></i> Calculate Complement
-                    </button>
-                    
-                    <div class="btn-group">
-                        <button id="clear-complement" class="btn btn-clear">
-                            <i class="fas fa-broom"></i> Clear
-                        </button>
-                        <button id="copy-complement" class="btn btn-copy">
-                            <i class="fas fa-copy"></i> Copy Result
-                        </button>
+                    <button id="calculate-complement-btn">Calculate Complement</button>
+                </div>
+
+                <div class="output-section">
+                    <div class="result">
+                        <div class="result-title">Complement Result</div>
+                        <div id="complement-result">-</div>
                     </div>
-                    
-                    <div class="result-container">
-                        <div class="result-title">
-                            <i class="fas fa-arrow-right"></i> Complement Result
-                        </div>
-                        <div id="complement-result" class="result-content">-</div>
-                        <div class="explanation" id="complement-explanation">
-                            Complements are used in digital systems and computer arithmetic for simplifying subtraction operations.
-                        </div>
+                    <div class="result">
+                        <div class="result-title">Explanation</div>
+                        <div id="complement-explanation">-</div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="footer">
-            <p>Advanced Number System Calculator &copy; 2023 | Supports Binary, Octal, Decimal, and Hexadecimal systems</p>
         </div>
     </div>
 
