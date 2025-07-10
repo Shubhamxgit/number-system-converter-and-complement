@@ -50,7 +50,8 @@ h1 {
     gap: 20px;
 }
 
-.input-section, .output-section {
+.input-section,
+.output-section {
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -72,14 +73,17 @@ label {
     color: var(--secondary-color);
 }
 
-input, select, button {
+input,
+select,
+button {
     padding: 10px;
     border: 1px solid var(--border-color);
     border-radius: 5px;
     font-size: 16px;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
     outline: none;
     border-color: var(--accent-color);
     box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.2);
@@ -99,17 +103,20 @@ button:hover {
 }
 
 .result {
-    margin-top: 10px;
-    padding: 15px;
+    margin-top: 5px;
+    padding: 10px;
     background-color: #f8f9fa;
     border-radius: 5px;
     border-left: 4px solid var(--accent-color);
+    font-size: 14px;
+    line-height: 1.4;
 }
 
 .result-title {
     font-weight: 600;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     color: var(--secondary-color);
+    font-size: 14px;
 }
 
 .error {

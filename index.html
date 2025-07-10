@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Advanced Number System Calculator</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
     <div class="container">
         <h1>Advanced Number System Calculator</h1>
@@ -16,12 +18,13 @@
             <div class="tab" data-tab="complement">Complement</div>
         </div>
 
+        <!-- Conversion Tab -->
         <div class="tab-content active" id="conversion-tab">
             <div class="calculator">
                 <div class="input-section">
                     <div class="form-group">
                         <label for="input-value">Enter Number</label>
-                        <input type="text" id="input-value" placeholder="e.g., 1010, FF, 755">
+                        <input type="text" id="input-value" placeholder="e.g., 1010, FF, 755" />
                     </div>
 
                     <div class="form-group">
@@ -61,12 +64,13 @@
             </div>
         </div>
 
+        <!-- Complement Tab -->
         <div class="tab-content" id="complement-tab">
             <div class="calculator">
                 <div class="input-section">
                     <div class="form-group">
                         <label for="complement-input">Enter Number</label>
-                        <input type="text" id="complement-input" placeholder="e.g., 1010, FF, 755">
+                        <input type="text" id="complement-input" placeholder="e.g., 1010, FF, 755" />
                     </div>
 
                     <div class="form-group">
@@ -83,11 +87,11 @@
                         <label>Complement Type</label>
                         <div style="display: flex; gap: 10px;">
                             <label style="display: flex; align-items: center; gap: 5px;">
-                                <input type="radio" name="complement-type" value="r-1" checked> 
+                                <input type="radio" name="complement-type" value="r-1" checked />
                                 <span id="r-1-label">(r-1)'s Complement</span>
                             </label>
                             <label style="display: flex; align-items: center; gap: 5px;">
-                                <input type="radio" name="complement-type" value="r"> 
+                                <input type="radio" name="complement-type" value="r" />
                                 <span id="r-label">r's Complement</span>
                             </label>
                         </div>
@@ -101,11 +105,6 @@
                         <div class="result-title">Complement Result</div>
                         <div id="complement-result">-</div>
                     </div>
-
-                    <div class="result">
-                        <div class="result-title">Explanation</div>
-                        <div id="complement-explanation">-</div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -113,4 +112,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
