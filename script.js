@@ -1,9 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const DEFAULT_PRECISION = 12;
-    const MAX_FRACTION_LENGTH = 50;
+    const MAX_FRACTION_PRECISION = 12;
+    const MAX_INPUT_LENGTH = 50;
 
-    // Tab switching
-    document.querySelectorAll('.tab').forEach(tab => {
+    // Tab switching functionality
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
         tab.addEventListener('click', function () {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -13,13 +14,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Complement label updates
+    // Complement terminology
     const complementBase = document.getElementById('complement-base');
     const r1Label = document.getElementById('r-1-label');
     const rLabel = document.getElementById('r-label');
-
-    complementBase.addEventListener('change', updateComplementLabels);
-    updateComplementLabels();
 
     function updateComplementLabels() {
         const base = parseInt(complementBase.value);
@@ -27,106 +25,113 @@ document.addEventListener('DOMContentLoaded', function () {
         rLabel.textContent = `${base}'s Complement`;
     }
 
-    // Convert Base Button
+    complementBase.addEventListener('change', updateComplementLabels);
+    updateComplementLabels();
+
     document.getElementById('convert-btn').addEventListener('click', convertNumber);
 
     function convertNumber() {
-        const input = document.getElementById('input-value').value.trim();
+        const input = document.getElementById('input-value').value.trim().toUpperCase();
         const fromBase = parseInt(document.getElementById('from-base').value);
         const toBase = parseInt(document.getElementById('to-base').value);
-        const precisionInput = document.getElementById('precision')?.value;
-        const precision = parseInt(precisionInput) || DEFAULT_PRECISION;
-
         const resultElement = document.getElementById('conversion-result');
         const originalElement = document.getElementById('original-value');
 
         resultElement.className = '';
         originalElement.className = '';
 
-        if (!input) return showError(resultElement, 'Please enter a number');
-        if (input.split('.').length > 2) return showError(resultElement, 'Invalid number format – multiple decimal points');
+        if (!input) {
+            return showError(resultElement, 'Please enter a number');
+        }
 
-        const isNegative = input.startsWith('-');
-        const inputClean = isNegative ? input.slice(1) : input;
+        if (input.split('.').length > 2) {
+            return showError(resultElement, 'Invalid number format – multiple decimal points');
+        }
 
         try {
-            let [integerPart = '0', fractionalPart = ''] = inputClean.split('.');
+            let [integerPart = '0', fractionalPart = ''] = input.split('.');
+            
+            // Validate input length
+            if (integerPart.length > MAX_INPUT_LENGTH || fractionalPart.length > MAX_INPUT_LENGTH) {
+                throw new Error(`Number too long (max ${MAX_INPUT_LENGTH} digits per part)`);
+            }
+
             const validChars = getValidChars(fromBase);
 
             if (!validateNumberParts(integerPart, fractionalPart, validChars)) {
-                throw new Error(`Invalid characters for base ${fromBase}`);
-            }
-
-            if (fractionalPart.length > MAX_FRACTION_LENGTH) {
-                throw new Error(`Fractional part too long (max ${MAX_FRACTION_LENGTH} digits)`);
+                throw new Error(`Invalid characters for base ${fromBase}. Allowed: 0-${Math.min(9, fromBase-1)}${fromBase > 10 ? ', A-' + String.fromCharCode(54 + fromBase) : ''}`);
             }
 
             const decimalValue = convertToDecimal(integerPart, fractionalPart, fromBase);
-            const result = convertFromDecimal(decimalValue, toBase, precision);
+            const result = convertFromDecimal(decimalValue, toBase);
 
-            resultElement.textContent = (isNegative ? '-' : '') + result;
+            resultElement.textContent = result;
             resultElement.classList.add('success');
-            originalElement.textContent = `Base ${fromBase}: ${input} → Base ${toBase}: ${(isNegative ? '-' : '') + result}`;
+            originalElement.textContent = `Base ${fromBase}: ${input} → Base ${toBase}: ${result}`;
         } catch (error) {
             showError(resultElement, error.message);
         }
     }
 
-    // Complement Button
     document.getElementById('calculate-complement-btn').addEventListener('click', calculateComplement);
 
     function calculateComplement() {
-        const input = document.getElementById('complement-input').value.trim();
+        const input = document.getElementById('complement-input').value.trim().toUpperCase();
         const base = parseInt(complementBase.value);
         const type = document.querySelector('input[name="complement-type"]:checked').value;
-
         const resultElement = document.getElementById('complement-result');
         const explanationElement = document.getElementById('complement-explanation');
 
         resultElement.className = '';
         explanationElement.className = '';
 
-        if (!input) return showError(resultElement, 'Please enter a number');
-        if (input.split('.').length > 2) return showError(resultElement, 'Invalid number format – multiple decimal points');
-        if (input.startsWith('-')) return showError(resultElement, 'Complement not defined for negative numbers');
-
-        let [integerPart = '0', fractionalPart = ''] = input.split('.');
-        const validChars = getValidChars(base);
-
-        if (!validateNumberParts(integerPart, fractionalPart, validChars)) {
-            return showError(resultElement, `Invalid characters for base ${base}`);
+        if (!input) {
+            return showError(resultElement, 'Please enter a number');
         }
 
-        if (fractionalPart.length > MAX_FRACTION_LENGTH) {
-            return showError(resultElement, `Fractional part too long (max ${MAX_FRACTION_LENGTH} digits)`);
+        if (input.split('.').length > 2) {
+            return showError(resultElement, 'Invalid number format – multiple decimal points');
         }
 
-        let result, explanation;
-        if (type === 'r-1') {
-            [result, explanation] = calculateR1Complement(integerPart, fractionalPart, base);
-        } else {
-            [result, explanation] = calculateRComplement(integerPart, fractionalPart, base);
-        }
+        try {
+            let [integerPart = '0', fractionalPart = ''] = input.split('.');
+            
+            // Validate input length
+            if (integerPart.length > MAX_INPUT_LENGTH || fractionalPart.length > MAX_INPUT_LENGTH) {
+                throw new Error(`Number too long (max ${MAX_INPUT_LENGTH} digits per part)`);
+            }
 
-        if (parseFloat(result) === 0) result = '0';
-        resultElement.textContent = result;
-        resultElement.classList.add('success');
-        explanationElement.textContent = explanation;
+            const validChars = getValidChars(base);
+
+            if (!validateNumberParts(integerPart, fractionalPart, validChars)) {
+                throw new Error(`Invalid characters for base ${base}. Allowed: 0-${Math.min(9, base-1)}${base > 10 ? ', A-' + String.fromCharCode(54 + base) : ''}`);
+            }
+
+            let result, explanation;
+            if (type === 'r-1') {
+                [result, explanation] = calculateR1Complement(integerPart, fractionalPart, base);
+            } else {
+                [result, explanation] = calculateRComplement(integerPart, fractionalPart, base);
+            }
+
+            resultElement.textContent = result;
+            resultElement.classList.add('success');
+            explanationElement.textContent = explanation;
+        } catch (error) {
+            showError(resultElement, error.message);
+        }
     }
 
-    // Core Helper Functions
+    // Helper Functions
 
     function getValidChars(base) {
-        return {
-            2: /^[01]+$/,
-            8: /^[0-7]+$/,
-            10: /^[0-9]+$/,
-            16: /^[0-9A-Fa-f]+$/
-        }[base] || new RegExp(`^[0-${Math.min(base - 1, 9)}A-${String.fromCharCode(55 + base - 10)}]+$`, 'i');
+        const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.slice(0, base);
+        return new RegExp(`^[${chars}]+$`, 'i');
     }
 
     function validateNumberParts(integerPart, fractionalPart, validChars) {
-        return (!integerPart || validChars.test(integerPart)) && (!fractionalPart || validChars.test(fractionalPart));
+        return validChars.test(integerPart) && 
+               (!fractionalPart || validChars.test(fractionalPart));
     }
 
     function convertToDecimal(integerPart, fractionalPart, base) {
@@ -138,14 +143,13 @@ document.addEventListener('DOMContentLoaded', function () {
         return decimalValue;
     }
 
-    function convertFromDecimal(decimalValue, base, precision = DEFAULT_PRECISION) {
-        if (base === 10) return decimalValue.toString();
-
+    function convertFromDecimal(decimalValue, base) {
         let intValue = Math.floor(decimalValue);
         let intResult = intValue.toString(base).toUpperCase();
 
         let fracValue = decimalValue - intValue;
         let fracResult = '';
+        let precision = MAX_FRACTION_PRECISION;
 
         if (fracValue > 0) {
             fracResult = '.';
@@ -171,22 +175,37 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function calculateRComplement(integerPart, fractionalPart, base) {
-        const totalDigits = integerPart.length;
-        const fracDigits = fractionalPart.length;
-        const decimalValue = convertToDecimal(integerPart, fractionalPart, base);
-        const power = Math.pow(base, totalDigits + fracDigits);
-        const complement = power - decimalValue;
+        const integerDigits = integerPart.length;
+        const fractionalDigits = fractionalPart.length;
+        const totalDigits = integerDigits + fractionalDigits;
+        
+        if (totalDigits === 0) return ['0', `${base}'s complement of 0 is 0`];
 
-        let rawResult = convertFromDecimal(complement, base, totalDigits + fracDigits);
-        let [intRes = '0', fracRes = ''] = rawResult.split('.');
-
-        const paddedInt = intRes.padStart(totalDigits, '0');
-        const paddedFrac = fracRes.padEnd(fracDigits, '0');
-        const result = fracDigits ? `${paddedInt}.${paddedFrac}` : paddedInt;
+        // Convert to decimal using BigInt for accuracy
+        const fullString = integerPart + fractionalPart;
+        let value = BigInt(0);
+        const baseBig = BigInt(base);
+        
+        for (let i = 0; i < fullString.length; i++) {
+            const digit = parseInt(fullString[i], base);
+            value = value * baseBig + BigInt(digit);
+        }
+        
+        const power = baseBig ** BigInt(totalDigits);
+        let complement = power - value;
+        
+        // Convert back to string
+        let complementStr = complement.toString(Number(base)).toUpperCase();
+        complementStr = complementStr.slice(-totalDigits).padStart(totalDigits, '0');
+        
+        // Split into integer and fractional parts
+        const intResult = complementStr.substring(0, integerDigits);
+        const fracResult = fractionalDigits ? complementStr.substring(integerDigits, integerDigits + fractionalDigits) : '';
+        const result = intResult + (fracResult ? '.' + fracResult : '');
 
         return [
             result,
-            `${base}'s complement: ${base}^(${totalDigits + fracDigits}) - original number = ${result}`
+            `${base}'s complement: ${base}^${totalDigits} - original number = ${result}`
         ];
     }
 
@@ -195,12 +214,12 @@ document.addEventListener('DOMContentLoaded', function () {
         element.classList.add('error');
     }
 
-    // Trigger Enter key actions
-    document.getElementById('input-value').addEventListener('keypress', e => {
+    // Trigger on Enter key
+    document.getElementById('input-value').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') convertNumber();
     });
 
-    document.getElementById('complement-input').addEventListener('keypress', e => {
+    document.getElementById('complement-input').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') calculateComplement();
     });
 });
