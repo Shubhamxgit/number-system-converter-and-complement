@@ -1,6 +1,3 @@
-// FINAL VERIFIED JAVASCRIPT: Advanced Number System Calculator
-// Fully tested with Module-2 PDF inputs and deep edge-case scenarios
-
 const MAX_FRACTION_PRECISION = 12;
 const MAX_INPUT_LENGTH = 50;
 
@@ -86,9 +83,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
       let result;
       if (type === 'r-1') {
-        [result] = r1Complement(intPart, fracPart, base);
+        result = r1Complement(intPart, fracPart, base);
       } else {
-        [result] = rComplement(intPart, fracPart, base);
+        result = rComplement(intPart, fracPart, base);
       }
 
       resultElement.textContent = result;
@@ -131,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const complementDigit = d => (base - 1 - parseInt(d, base)).toString(base).toUpperCase();
     const intComp = intPart.split('').map(complementDigit).join('') || '0';
     const fracComp = fracPart ? '.' + fracPart.split('').map(complementDigit).join('') : '';
-    return [intComp + fracComp];
+    return intComp + fracComp;
   }
 
   function rComplement(intPart, fracPart, base) {
@@ -150,9 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const intRes = intPart === '0' ? '0' : compStr.slice(0, intPart.length);
     const fracRes = fracPart ? compStr.slice(intPart.length).padEnd(fracPart.length, '0') : '';
-
-    const result = fracRes ? `${intRes || '0'}.${fracRes}` : intRes;
-    return [result];
+    return fracRes ? `${intRes || '0'}.${fracRes}` : intRes;
   }
 
   function getValidChars(base) {
