@@ -175,39 +175,41 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function calculateRComplement(integerPart, fractionalPart, base) {
-        const integerDigits = integerPart.length;
-        const fractionalDigits = fractionalPart.length;
-        const totalDigits = integerDigits + fractionalDigits;
-        
-        if (totalDigits === 0) return ['0', `${base}'s complement of 0 is 0`];
+    const isZeroInt = parseInt(integerPart, base) === 0;
+    const integerDigits = isZeroInt ? 0 : integerPart.length;
+    const fractionalDigits = fractionalPart.length;
+    const totalDigits = integerDigits + fractionalDigits;
 
-        // Convert to decimal using BigInt for accuracy
-        const fullString = integerPart + fractionalPart;
-        let value = BigInt(0);
-        const baseBig = BigInt(base);
-        
-        for (let i = 0; i < fullString.length; i++) {
-            const digit = parseInt(fullString[i], base);
-            value = value * baseBig + BigInt(digit);
-        }
-        
-        const power = baseBig ** BigInt(totalDigits);
-        let complement = power - value;
-        
-        // Convert back to string
-        let complementStr = complement.toString(Number(base)).toUpperCase();
-        complementStr = complementStr.slice(-totalDigits).padStart(totalDigits, '0');
-        
-        // Split into integer and fractional parts
-        const intResult = complementStr.substring(0, integerDigits);
-        const fracResult = fractionalDigits ? complementStr.substring(integerDigits, integerDigits + fractionalDigits) : '';
-        const result = intResult + (fracResult ? '.' + fracResult : '');
-
-        return [
-            result,
-            `${base}'s complement: ${base}^${totalDigits} - original number = ${result}`
-        ];
+    // Handle 0 input explicitly
+    if (/^0*$/.test(integerPart) && /^0*$/.test(fractionalPart)) {
+        return ['0', `${base}'s complement of 0 is 0`];
     }
+
+    const baseBig = BigInt(base);
+    const fullString = (integerPart + fractionalPart).replace(/^0+/, '') || '0';
+
+    // Convert to base-10 BigInt by parsing each digit
+    let value = BigInt(0);
+    for (let i = 0; i < fullString.length; i++) {
+        const digit = parseInt(fullString[i], base);
+        value = value * baseBig + BigInt(digit);
+    }
+
+    const power = baseBig ** BigInt(totalDigits);
+    let complement = power - value;
+
+    // Convert complement to correct base
+    let complementStr = complement.toString(base).toUpperCase().padStart(totalDigits, '0');
+
+    // Split into integer and fractional parts
+    const intResult = complementStr.substring(0, integerDigits) || '0';
+    const fracResult = fractionalDigits ? complementStr.substring(integerDigits).padEnd(fractionalDigits, '0') : '';
+
+    const result = fracResult ? `${intResult}.${fracResult}` : intResult;
+    const explanation = `${base}'s complement: ${base}^${totalDigits} - original number = ${result}`;
+
+    return [result, explanation];
+}
 
     function showError(element, message) {
         element.textContent = message;
