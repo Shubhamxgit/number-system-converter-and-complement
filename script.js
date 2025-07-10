@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const MAX_FRACTION_PRECISION = 12;
     const MAX_INPUT_LENGTH = 50;
 
+    // Tab switching functionality
     const tabs = document.querySelectorAll('.tab');
     tabs.forEach(tab => {
         tab.addEventListener('click', function () {
@@ -13,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Complement terminology
     const complementBase = document.getElementById('complement-base');
     const r1Label = document.getElementById('r-1-label');
     const rLabel = document.getElementById('r-label');
@@ -27,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
     updateComplementLabels();
 
     document.getElementById('convert-btn').addEventListener('click', convertNumber);
-    document.getElementById('calculate-complement-btn').addEventListener('click', calculateComplement);
 
     function convertNumber() {
         const input = document.getElementById('input-value').value.trim().toUpperCase();
@@ -39,12 +40,17 @@ document.addEventListener('DOMContentLoaded', function () {
         resultElement.className = '';
         originalElement.className = '';
 
-        if (!input) return showError(resultElement, 'Please enter a number');
-        if (input.split('.').length > 2) return showError(resultElement, 'Invalid number format – multiple decimal points');
+        if (!input) {
+            return showError(resultElement, 'Please enter a number');
+        }
+
+        if (input.split('.').length > 2) {
+            return showError(resultElement, 'Invalid number format – multiple decimal points');
+        }
 
         try {
             let [integerPart = '0', fractionalPart = ''] = input.split('.');
-
+            
             if (integerPart.length > MAX_INPUT_LENGTH || fractionalPart.length > MAX_INPUT_LENGTH) {
                 throw new Error(`Number too long (max ${MAX_INPUT_LENGTH} digits per part)`);
             }
@@ -52,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const validChars = getValidChars(fromBase);
 
             if (!validateNumberParts(integerPart, fractionalPart, validChars)) {
-                throw new Error(`Invalid characters for base ${fromBase}`);
+                throw new Error(`Invalid characters for base ${fromBase}.`);
             }
 
             const decimalValue = convertToDecimal(integerPart, fractionalPart, fromBase);
@@ -66,6 +72,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    document.getElementById('calculate-complement-btn').addEventListener('click', calculateComplement);
+
     function calculateComplement() {
         const input = document.getElementById('complement-input').value.trim().toUpperCase();
         const base = parseInt(complementBase.value);
@@ -76,19 +84,25 @@ document.addEventListener('DOMContentLoaded', function () {
         resultElement.className = '';
         explanationElement.className = '';
 
-        if (!input) return showError(resultElement, 'Please enter a number');
-        if (input.split('.').length > 2) return showError(resultElement, 'Invalid number format – multiple decimal points');
+        if (!input) {
+            return showError(resultElement, 'Please enter a number');
+        }
+
+        if (input.split('.').length > 2) {
+            return showError(resultElement, 'Invalid number format – multiple decimal points');
+        }
 
         try {
             let [integerPart = '0', fractionalPart = ''] = input.split('.');
-
+            
             if (integerPart.length > MAX_INPUT_LENGTH || fractionalPart.length > MAX_INPUT_LENGTH) {
                 throw new Error(`Number too long (max ${MAX_INPUT_LENGTH} digits per part)`);
             }
 
             const validChars = getValidChars(base);
+
             if (!validateNumberParts(integerPart, fractionalPart, validChars)) {
-                throw new Error(`Invalid characters for base ${base}`);
+                throw new Error(`Invalid characters for base ${base}.`);
             }
 
             let result, explanation;
@@ -106,47 +120,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Updated function: ✅ correct r's complement
-    function calculateRComplement(integerPart, fractionalPart, base) {
-        const integerDigits = integerPart.length;
-        const fractionalDigits = fractionalPart.length;
-        const totalDigits = integerDigits + fractionalDigits;
+    // Helper Functions
 
-        if (/^0*$/.test(integerPart) && /^0*$/.test(fractionalPart)) {
-            return ['0', `${base}'s complement of 0 is 0`];
-        }
-
-        const baseBig = BigInt(base);
-        const fullString = integerPart + fractionalPart;
-
-        let value = BigInt(0);
-        for (let i = 0; i < fullString.length; i++) {
-            const digit = parseInt(fullString[i], base);
-            value = value * baseBig + BigInt(digit);
-        }
-
-        const power = baseBig ** BigInt(totalDigits);
-        let complement = power - value;
-
-        let complementStr = complement.toString(base).toUpperCase().padStart(totalDigits, '0');
-
-        const intResult = complementStr.substring(0, integerDigits) || '0';
-        const fracResult = fractionalDigits ? complementStr.substring(integerDigits).padEnd(fractionalDigits, '0') : '';
-        const result = fractionalDigits ? `${intResult}.${fracResult}` : intResult;
-        const inputString = fractionalPart ? `${integerPart}.${fractionalPart}` : integerPart;
-        const explanation = `${base}'s complement: ${base}^${totalDigits} - ${inputString} = ${result}`;
-
-        return [result, explanation];
+    function getValidChars(base) {
+        const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.slice(0, base);
+        return new RegExp(`^[${chars}]+$`, 'i');
     }
 
-    function calculateR1Complement(integerPart, fractionalPart, base) {
-        const complementDigit = d => (base - 1 - parseInt(d, base)).toString(base).toUpperCase();
-        const intResult = integerPart.split('').map(complementDigit).join('').padStart(integerPart.length, '0');
-        const fracResult = fractionalPart ? '.' + fractionalPart.split('').map(complementDigit).join('') : '';
-        return [
-            intResult + fracResult,
-            `(${base - 1})'s complement: Subtract each digit from ${base - 1}`
-        ];
+    function validateNumberParts(integerPart, fractionalPart, validChars) {
+        return validChars.test(integerPart) &&
+               (!fractionalPart || validChars.test(fractionalPart));
     }
 
     function convertToDecimal(integerPart, fractionalPart, base) {
@@ -179,14 +162,57 @@ document.addEventListener('DOMContentLoaded', function () {
         return intResult + fracResult;
     }
 
-    function getValidChars(base) {
-        const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.slice(0, base);
-        return new RegExp(`^[${chars}]+$`, 'i');
+    function calculateR1Complement(integerPart, fractionalPart, base) {
+        const complementDigit = d => (base - 1 - parseInt(d, base)).toString(base).toUpperCase();
+
+        const intResult = integerPart.split('').map(complementDigit).join('').padStart(integerPart.length, '0');
+
+        let fracResult = '';
+        if (fractionalPart) {
+            fracResult = '.' + fractionalPart
+                .split('')
+                .map(d => complementDigit(d))
+                .join('')
+                .padEnd(fractionalPart.length, '0');
+        }
+
+        const result = intResult + fracResult;
+        const explanation = `(${base - 1})'s complement: Subtract each digit from ${base - 1}`;
+
+        return [result, explanation];
     }
 
-    function validateNumberParts(integerPart, fractionalPart, validChars) {
-        return validChars.test(integerPart) &&
-            (!fractionalPart || validChars.test(fractionalPart));
+    function calculateRComplement(integerPart, fractionalPart, base) {
+        const isZeroInt = parseInt(integerPart, base) === 0;
+        const integerDigits = isZeroInt ? 0 : integerPart.length;
+        const fractionalDigits = fractionalPart.length;
+        const totalDigits = integerDigits + fractionalDigits;
+
+        if (/^0*$/.test(integerPart) && /^0*$/.test(fractionalPart)) {
+            return ['0', `${base}'s complement of 0 is 0`];
+        }
+
+        const baseBig = BigInt(base);
+        const fullString = (integerPart + fractionalPart).replace(/^0+/, '') || '0';
+
+        let value = BigInt(0);
+        for (let i = 0; i < fullString.length; i++) {
+            const digit = parseInt(fullString[i], base);
+            value = value * baseBig + BigInt(digit);
+        }
+
+        const power = baseBig ** BigInt(totalDigits);
+        let complement = power - value;
+
+        let complementStr = complement.toString(base).toUpperCase().padStart(totalDigits, '0');
+
+        const intResult = complementStr.substring(0, integerDigits) || '0';
+        const fracResult = fractionalDigits ? complementStr.substring(integerDigits).padEnd(fractionalDigits, '0') : '';
+
+        const result = fracResult ? `${intResult}.${fracResult}` : intResult;
+        const explanation = `${base}'s complement: ${base}^${totalDigits} - original number = ${result}`;
+
+        return [result, explanation];
     }
 
     function showError(element, message) {
@@ -194,6 +220,7 @@ document.addEventListener('DOMContentLoaded', function () {
         element.classList.add('error');
     }
 
+    // Trigger on Enter key
     document.getElementById('input-value').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') convertNumber();
     });
