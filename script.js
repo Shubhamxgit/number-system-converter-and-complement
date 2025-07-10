@@ -69,10 +69,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const base = parseInt(complementBase.value);
     const type = document.querySelector('input[name="complement-type"]:checked').value;
     const resultElement = document.getElementById('complement-result');
-    const explanationElement = document.getElementById('complement-explanation');
 
     resultElement.className = '';
-    explanationElement.className = '';
 
     if (!input) return showError(resultElement, 'Please enter a number');
     if (input.split('.').length > 2) return showError(resultElement, 'Invalid format: multiple decimal points');
@@ -86,16 +84,15 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!validateParts(intPart, fracPart, validChars))
         throw new Error(`Invalid characters for base ${base}`);
 
-      let result, explanation;
+      let result;
       if (type === 'r-1') {
-        [result, explanation] = r1Complement(intPart, fracPart, base);
+        [result] = r1Complement(intPart, fracPart, base);
       } else {
-        [result, explanation] = rComplement(intPart, fracPart, base);
+        [result] = rComplement(intPart, fracPart, base);
       }
 
       resultElement.textContent = result;
       resultElement.classList.add('success');
-      explanationElement.textContent = explanation;
     } catch (err) {
       showError(resultElement, err.message);
     }
@@ -134,13 +131,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const complementDigit = d => (base - 1 - parseInt(d, base)).toString(base).toUpperCase();
     const intComp = intPart.split('').map(complementDigit).join('') || '0';
     const fracComp = fracPart ? '.' + fracPart.split('').map(complementDigit).join('') : '';
-    return [intComp + fracComp, `(${base - 1})'s complement: subtract each digit from ${base - 1}`];
+    return [intComp + fracComp];
   }
 
   function rComplement(intPart, fracPart, base) {
-    const totalDigits = intPart.length + fracPart.length;
     const baseBig = BigInt(base);
     const fullStr = intPart + fracPart;
+    const totalDigits = fullStr.length;
 
     let value = BigInt(0);
     for (const d of fullStr) {
@@ -151,13 +148,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const complement = power - value;
     let compStr = complement.toString(base).toUpperCase().padStart(totalDigits, '0');
 
-    const intRes = compStr.slice(0, intPart.length) || '0';
+    const intRes = intPart === '0' ? '0' : compStr.slice(0, intPart.length);
     const fracRes = fracPart ? compStr.slice(intPart.length).padEnd(fracPart.length, '0') : '';
-    const result = fracRes ? `${intRes}.${fracRes}` : intRes;
 
-    const original = fracPart ? `${intPart}.${fracPart}` : intPart;
-    const explanation = `${base}'s complement: ${base}^${totalDigits} - ${original} = ${result}`;
-    return [result, explanation];
+    const result = fracRes ? `${intRes || '0'}.${fracRes}` : intRes;
+    return [result];
   }
 
   function getValidChars(base) {
